@@ -1,32 +1,34 @@
+<?php include_once __DIR__ . '/../Variable/Product/FilterBarTop.php'; ?>
+
 <style>
 /* =========================================================
-   LUCKY OIL - FILTER BAR TOP (EXACT FIGMA 1440px x 265px SPEC)
-   Figma Top Gap: 130px | Bottom Gap: 32px | Side Margins: 95px
+   LUCKY OIL - FILTER BAR TOP (FIGMA STICKY SCROLL SPEC)
    ========================================================= */
 
 .lof-filter-section {
     width: 100%;
-    background-color: #ECECEC; /* Figma: light grey background */
+    background-color: #ECECEC;
     position: sticky;
-    top: var(--lucky-header-height, 100px);
+    top: 0; /* Sticks right at the top of viewport */
     z-index: 900;
-    margin-top: 60px; /* Gap after hero ad frame */
-    margin-bottom: 60px; /* Exact 60px gap to product grid */
+    margin-top: 0;
+    margin-bottom: 60px;
     border-top: 1px solid rgba(115, 115, 115, 0.20);
     border-bottom: 1px solid rgba(115, 115, 115, 0.20);
-    transition: box-shadow 0.3s ease;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Shadow when stuck */
-.lof-filter-section.is-stuck {
+/* Stuck / Scrolled Compact State */
+.lof-filter-section.is-scrolled {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+    border-top-color: transparent;
 }
 
 /* Outer frame */
 .lof-filter-frame {
     width: 100%;
     max-width: 1440px;
-    height: 265px;
+    min-height: 265px;
     margin: 0 auto;
     padding: 40px 95px 32px;
     box-sizing: border-box;
@@ -34,9 +36,17 @@
     flex-direction: column;
     justify-content: center;
     gap: 28px;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Top Row: Title on Left, Subtitle on Right */
+/* Dynamic height reduction on scroll */
+.lof-filter-section.is-scrolled .lof-filter-frame {
+    min-height: 80px;
+    padding: 16px 95px;
+    gap: 0;
+}
+
+/* Header Row (Collapses on Scroll) */
 .lof-filter-header-row {
     display: flex;
     justify-content: space-between;
@@ -44,6 +54,18 @@
     gap: 24px;
     margin: 0;
     flex-wrap: wrap;
+    max-height: 120px;
+    opacity: 1;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hide Title/Description smoothly when scrolling */
+.lof-filter-section.is-scrolled .lof-filter-header-row {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+    pointer-events: none;
 }
 
 /* Title matching Figma Typography */
@@ -57,13 +79,8 @@
     line-height: 1.1;
 }
 
-.lof-title-dark {
-    color: #151515;
-}
-
-.lof-title-gold {
-    color: #BF800D;
-}
+.lof-title-dark { color: #151515; }
+.lof-title-gold { color: #BF800D; }
 
 /* Subtitle matching Figma text specs */
 .lof-section-desc {
@@ -85,6 +102,7 @@
     gap: 16px;
     margin: 0;
     flex-wrap: wrap;
+    width: 100%;
 }
 
 /* Category Filter Chips / Pills */
@@ -115,7 +133,6 @@
     transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Filter Hover Animation*/
 .lof-filter-btn:hover:not(.active) {
     transform: translateY(-2.5px) scale(1.02);
     border-color: #BF800D;
@@ -128,7 +145,6 @@
     transform: translateY(0) scale(0.98);
 }
 
-/* Active Filter Pill */
 .lof-filter-btn.active {
     background-color: #BF800D;
     border-color: #BF800D;
@@ -143,7 +159,6 @@
     gap: 12px;
 }
 
-/* Search Box */
 .lof-search-wrapper {
     position: relative;
     width: 250px;
@@ -236,15 +251,12 @@
     transition: transform 0.25s ease;
 }
 
-.lof-sort-chevron svg {
-    stroke: #737373;
-}
+.lof-sort-chevron svg { stroke: #737373; }
 
 .lof-sort-dropdown-container.open .lof-sort-chevron {
     transform: rotate(180deg);
 }
 
-/* Dropdown Menu Popover */
 .lof-sort-menu {
     position: absolute;
     top: calc(100% + 6px);
@@ -262,21 +274,14 @@
 }
 
 @keyframes lofDropdownSlideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .lof-sort-dropdown-container.open .lof-sort-menu {
     display: flex;
 }
 
-/* Dropdown Option Items */
 .lof-sort-option {
     display: flex;
     align-items: center;
@@ -319,89 +324,39 @@
 
 /* Responsive Breakpoints */
 @media (max-width: 1280px) {
-    .lof-filter-frame {
-        padding: 32px 40px 24px;
-        height: auto;
-    }
+    .lof-filter-frame { padding: 32px 40px 24px; }
+    .lof-filter-section.is-scrolled .lof-filter-frame { padding: 14px 40px; }
 }
 
 @media (max-width: 900px) {
-    .lof-filter-section {
-        margin-bottom: 30px;
-    }
-    .lof-filter-frame {
-        padding: 24px 20px 20px;
-        height: auto;
-    }
+    .lof-filter-section { margin-bottom: 30px; }
+    .lof-filter-frame { padding: 24px 20px 20px; }
+    .lof-filter-section.is-scrolled .lof-filter-frame { padding: 12px 20px; }
     .lof-filter-header-row {
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
     }
-    .lof-section-desc {
-        text-align: left;
-    }
+    .lof-section-desc { text-align: left; }
 }
 
 @media (max-width: 640px) {
     .lof-filter-section {
         margin-bottom: 20px;
-        margin-top: 24px;
         position: relative;
-        top: auto;
     }
-    .lof-section-title {
-        font-size: 26px;
-    }
+    .lof-section-title { font-size: 26px; }
     .lof-filter-controls-row {
         flex-direction: column;
         align-items: stretch;
         gap: 16px;
     }
-    .lof-search-sort-bar {
-        width: 100%;
-        justify-content: space-between;
-    }
-    .lof-search-wrapper {
-        flex: 1;
-    }
-    .lof-sort-trigger-btn {
-        width: auto;
-    }
-
-    .lof-filter-frame {
-        padding: 20px 16px 18px;
-        gap: 22px;
-    }
-
-    .lof-section-desc {
-        max-width: none;
-        font-size: 12px;
-    }
-
-    .lof-filter-pills {
-        width: 100%;
-        gap: 8px;
-    }
-
-    .lof-filter-btn {
-        flex: 1 1 auto;
-        min-height: 40px;
-        padding: 9px 12px;
-        font-size: 11px;
-    }
-
-    .lof-search-sort-bar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-    }
-
-    .lof-search-wrapper,
-    .lof-sort-dropdown-container,
-    .lof-sort-trigger-btn {
-        width: 100%;
-    }
+    .lof-filter-frame { padding: 20px 16px 18px; gap: 22px; }
+    .lof-section-desc { max-width: none; font-size: 12px; }
+    .lof-filter-pills { width: 100%; gap: 8px; }
+    .lof-filter-btn { flex: 1 1 auto; min-height: 40px; padding: 9px 12px; font-size: 11px; }
+    .lof-search-sort-bar { flex-direction: column; align-items: stretch; gap: 10px; width: 100%; }
+    .lof-search-wrapper, .lof-sort-dropdown-container, .lof-sort-trigger-btn { width: 100%; }
 }
 </style>
 
@@ -412,34 +367,32 @@
         <!-- Header Row -->
         <div class="lof-filter-header-row">
             <h1 class="lof-section-title">
-                <span class="lof-title-dark">OUR</span> <span class="lof-title-gold">PRODUCTS</span>
+                <span class="lof-title-dark"><?php echo htmlspecialchars($filter_bar_top['title']['dark']); ?></span> <span class="lof-title-gold"><?php echo htmlspecialchars($filter_bar_top['title']['gold']); ?></span>
             </h1>
             <p class="lof-section-desc">
-                Discover our range of high-quality edible oils, fats, margarines and customised food ingredients.
+                <?php echo htmlspecialchars($filter_bar_top['description']); ?>
             </p>
         </div>
 
         <!-- Filter Controls Row -->
         <div class="lof-filter-controls-row">
             
-            <!-- Category Filter Buttons with Hover Animation -->
+            <!-- Category Filter Buttons -->
             <div class="lof-filter-pills" id="lofCategoryPills">
-                <button type="button" class="lof-filter-btn active" data-category="all">ALL PRODUCTS</button>
-                <button type="button" class="lof-filter-btn" data-category="cooking-oil">COOKING OIL</button>
-                <button type="button" class="lof-filter-btn" data-category="margarine">MAGARINE & SPREADS</button>
-                <button type="button" class="lof-filter-btn" data-category="fat-ghee">FAT & GHEE</button>
+                <?php foreach ($filter_bar_top['categories'] as $category): ?>
+                    <button type="button" class="lof-filter-btn<?php echo !empty($category['active']) ? ' active' : ''; ?>" data-category="<?php echo htmlspecialchars($category['category']); ?>"><?php echo htmlspecialchars($category['label']); ?></button>
+                <?php endforeach; ?>
             </div>
 
             <!-- Search and Sort Toolbar -->
             <div class="lof-search-sort-bar">
                 
-                <!-- Search Box with Clean Vector SVG Icon -->
                 <div class="lof-search-wrapper">
                     <input 
                         type="text" 
                         id="lofSearchInput" 
                         class="lof-search-input" 
-                        placeholder="Search"
+                        placeholder="<?php echo htmlspecialchars($filter_bar_top['search']['placeholder']); ?>"
                     >
                     <span class="lof-search-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -449,10 +402,9 @@
                     </span>
                 </div>
 
-                <!-- Custom Interactive "Sort by" Dropdown Menu -->
                 <div class="lof-sort-dropdown-container" id="lofSortDropdown">
                     <button type="button" class="lof-sort-trigger-btn" id="lofSortTrigger">
-                        <span id="lofSortCurrentLabel">Popularity</span>
+                        <span id="lofSortCurrentLabel"><?php echo htmlspecialchars($filter_bar_top['sort']['default_label']); ?></span>
                         <span class="lof-sort-chevron">
                             <svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M1 1L5 5L9 1"/>
@@ -460,40 +412,17 @@
                         </span>
                     </button>
 
-                    <!-- Dropdown Popover List -->
                     <div class="lof-sort-menu" id="lofSortMenu">
-                        <button type="button" class="lof-sort-option selected" data-value="popularity">
-                            <span>Popularity</span>
-                            <span class="lof-sort-option-check">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#BF800D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                            </span>
-                        </button>
-                        <button type="button" class="lof-sort-option" data-value="newest">
-                            <span>Newest</span>
-                            <span class="lof-sort-option-check">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#BF800D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                            </span>
-                        </button>
-                        <button type="button" class="lof-sort-option" data-value="name_asc">
-                            <span>Name: A to Z</span>
-                            <span class="lof-sort-option-check">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#BF800D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                            </span>
-                        </button>
-                        <button type="button" class="lof-sort-option" data-value="name_desc">
-                            <span>Name: Z to A</span>
-                            <span class="lof-sort-option-check">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#BF800D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                            </span>
-                        </button>
+                        <?php foreach ($filter_bar_top['sort']['options'] as $option): ?>
+                            <button type="button" class="lof-sort-option<?php echo !empty($option['selected']) ? ' selected' : ''; ?>" data-value="<?php echo htmlspecialchars($option['value']); ?>">
+                                <span><?php echo htmlspecialchars($option['label']); ?></span>
+                                <span class="lof-sort-option-check">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#BF800D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </span>
+                            </button>
+                        <?php endforeach; ?>
                     </div>
                 </div>
 
@@ -504,34 +433,43 @@
     </div>
 </section>
 
-<!-- Scripts: Sticky Shadow, Filter Action, and Custom Sort Menu -->
+<!-- JavaScript for Sticky Header Auto-shrink and Filter Logic -->
 <script>
 (function() {
     const filterSec = document.getElementById('lofFilterSection');
+    
     if (filterSec) {
-        const updateStickyState = () => {
-            const header = document.querySelector('.lucky-header');
-            const headerHeight = header ? header.offsetHeight : (parseFloat(
-                getComputedStyle(document.documentElement)
-                    .getPropertyValue('--lucky-header-height')
-            ) || 100);
+        let initialTopOffset = filterSec.offsetTop;
 
-            const rect = filterSec.getBoundingClientRect();
-            filterSec.classList.toggle(
-                'is-stuck',
-                rect.top <= headerHeight + 2
-            );
+        const handleScroll = () => {
+            const scrollY = window.scrollY || window.pageYOffset;
+            
+            // Recalculate original offset if hero banner shifts
+            if (initialTopOffset === 0) {
+                initialTopOffset = filterSec.offsetTop;
+            }
+
+            // Shrink filter bar seamlessly when it hits the top edge
+            if (scrollY >= initialTopOffset) {
+                filterSec.classList.add('is-scrolled');
+            } else {
+                filterSec.classList.remove('is-scrolled');
+            }
         };
 
-        updateStickyState();
-        window.addEventListener('scroll', updateStickyState, { passive: true });
-        window.addEventListener('resize', updateStickyState);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        window.addEventListener('resize', () => {
+            initialTopOffset = filterSec.offsetTop;
+            handleScroll();
+        });
+        handleScroll();
     }
 
     const sortDropdown = document.getElementById('lofSortDropdown');
     const sortTrigger = document.getElementById('lofSortTrigger');
     const sortLabel = document.getElementById('lofSortCurrentLabel');
     const sortOptions = document.querySelectorAll('.lof-sort-option');
+
     document.addEventListener('DOMContentLoaded', () => {
         const filterBtns = document.querySelectorAll('.lof-filter-btn');
         const searchInput = document.getElementById('lofSearchInput');
@@ -590,9 +528,7 @@
             } else if (sortType === 'newest') {
                 sortedCards.reverse();
             } else {
-                sortedCards.sort((a, b) => {
-                    return parseInt(a.dataset.originalIndex, 10) - parseInt(b.dataset.originalIndex, 10);
-                });
+                sortedCards.sort((a, b) => parseInt(a.dataset.originalIndex, 10) - parseInt(b.dataset.originalIndex, 10));
             }
 
             if (grid) {

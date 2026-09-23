@@ -1,3 +1,5 @@
+<?php include_once __DIR__ . '/../Variable/productViewPage/SpecificationTable.php'; ?>
+
 <style>
 /* ==========================================
    SECTION 3: SPECS & REVIEWS STYLES
@@ -160,16 +162,8 @@
 }
 </style>
 
-<?php
-$specs = [
-    'Type'              => 'Refined Palm Olein',
-    'Volume Options'    => '1L, 5L, 10L, 20L',
-    'Shelf Life'        => '12 months from production',
-    'Storage'           => 'Store in a cool, dry place away from direct sunlight.',
-    'Packaging'         => 'Food-grade PET bottle (1L, 5L) & Jerry can (10L & 20L)'
-];
 
-?>
+
 
 <div class="lof-specs-reviews-section">
     <div class="lof-specs-container">

@@ -80,8 +80,6 @@
             opacity 0.3s ease;
     }
 
-    
-
     .lucky-header-nav a:hover {
         color: #BF800D;
     }
@@ -128,7 +126,7 @@
         font-family: Arial, Helvetica, sans-serif;
         font-size: 15px;
         font-weight: 600;
-       line-height: 18px;
+        line-height: 18px;
         text-transform: uppercase;
 
         transition:
@@ -255,19 +253,6 @@
 
         text-decoration: none;
     }
-
-
-    /* =========================================================
-       MENU OPEN STATE
-       ========================================================= */
-
-    
-
-    
-
-    
-
-    
 
 
     /* =========================================================
@@ -627,9 +612,6 @@
             display: block !important;
         }
 
-        /* IMPORTANT: show the complete navigation vertically */
-        
-
         .lucky-header-mobile-menu-inner {
             width: 100%;
             display: flex !important;
@@ -718,9 +700,7 @@
 
 
     /* =========================================================
-       STICKY HEADER
-       - Remains visible while scrolling
-       - Uses the blurred scrolled state below the top of the page
+       STICKY HEADER & AUTO-HIDE
        ========================================================= */
 
     .lucky-header {
@@ -753,16 +733,11 @@
         backdrop-filter: blur(14px);
     }
 
-    /* Prevent the fixed header from covering the first section.
-       The page already has a normal flow header in the DOM, so only
-       the visual header is fixed; its original space remains reserved. */
-
     @media (prefers-reduced-motion: reduce) {
         .lucky-header {
             transition: none !important;
         }
     }
-
 </style>
 
 <?php
@@ -915,20 +890,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <script>
 /* =========================================================
-   SMART HEADER SHOW / HIDE
+   SMART AUTO-HIDE HEADER ON SCROLL DOWN
    ========================================================= */
 document.addEventListener('DOMContentLoaded', function () {
     const header = document.querySelector('.lucky-header');
 
     if (!header) return;
 
-    let lastScrollY =
-        window.pageYOffset || document.documentElement.scrollTop;
-    const scrollThreshold = 6;
+    let lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollThreshold = 5;
 
     function showHeader() {
         header.classList.remove('header-hidden');
-        header.classList.add('header-scrolling');
     }
 
     function hideHeader() {
@@ -937,24 +910,23 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function onScroll() {
-        const currentScrollY =
-            window.pageYOffset || document.documentElement.scrollTop;
+        const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
+        const menu = document.getElementById('lucky-header-mobile-menu');
+        const menuIsOpen = menu && menu.classList.contains('is-open');
 
-        if (currentScrollY <= 5) {
+        // Always show top bar at original position or if mobile menu is open
+        if (currentScrollY <= 10 || menuIsOpen) {
             showHeader();
             header.classList.remove('header-scrolling');
             lastScrollY = currentScrollY;
             return;
         }
 
-        const menu = document.getElementById('lucky-header-mobile-menu');
-        const menuIsOpen = menu && menu.classList.contains('is-open');
-
-        if (!menuIsOpen && currentScrollY > lastScrollY + scrollThreshold) {
+        // Hide when scrolling DOWN, reveal when scrolling UP
+        if (currentScrollY > lastScrollY + scrollThreshold) {
             hideHeader();
-        } else if (currentScrollY < lastScrollY - scrollThreshold || menuIsOpen) {
+        } else if (currentScrollY < lastScrollY - scrollThreshold) {
             showHeader();
-        } else if (currentScrollY > 5) {
             header.classList.add('header-scrolling');
         }
 
@@ -962,25 +934,27 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /*
-     * Moving the pointer near the top always reveals the navbar.
+     * Moving the mouse near the top edge always reveals the navbar.
      */
     document.addEventListener('mousemove', function (event) {
-        if (event.clientY <= 80) {
+        if (event.clientY <= 60) {
             showHeader();
         }
     }, { passive: true });
 
     /*
-     * Touch devices: touching the screen reveals the navbar.
+     * Touch devices: touching near the top reveals the navbar.
      */
-    document.addEventListener('touchstart', function () {
-        showHeader();
+    document.addEventListener('touchstart', function (event) {
+        if (event.touches && event.touches[0].clientY <= 60) {
+            showHeader();
+        }
     }, { passive: true });
 
     window.addEventListener('scroll', onScroll, { passive: true });
 
     /*
-     * Keep the header visible while the mobile menu is open.
+     * Keep the header visible while the mobile menu is active.
      */
     const menuButton = document.getElementById('lucky-header-menu-button');
 
@@ -991,11 +965,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /*
-     * Reset the header when resizing.
+     * Reset the header on window resize.
      */
     window.addEventListener('resize', function () {
-        lastScrollY =
-            window.pageYOffset || document.documentElement.scrollTop;
+        lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
         showHeader();
     });
 
